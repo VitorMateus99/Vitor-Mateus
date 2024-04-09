@@ -1,0 +1,106 @@
+-- Etapa1 
+
+CREATE DATABASE artigosesportivos;
+
+-- Etapa 2 
+
+CREATE TABLE Categorias ( 
+Id_Categorias INT not null AUTO_INCREMENT, 
+Nome_Categorias VARCHAR(100) Not null, 
+PRIMARY key  (Id_Categorias) );
+
+
+CREATE TABLE Sub_Categorias ( 
+    Id_Subcatg INT not null AUTO_INCREMENT, 
+    Nome_SubCatg VARCHAR(100) not null, 
+    Id_Categorias INT not null, 
+    PRIMARY KEY  ( Id_Subcatg), 
+    CONSTRAINT FK_Categoria FOREIGN KEY (Id_Categorias) 
+    REFERENCES categorias (Id_Categorias) );
+
+CREATE TABLE produtos ( 
+    Id_Produto INT AUTO_INCREMENT NOT NULL, 
+    Nome_Produto VARCHAR(100) NOT NULL, 
+    Preco Float not null, 
+    Descricao VARCHAR(200) NOT NULL, 
+    Id_Subcatg INT not null, 
+    Id_Categorias INT not null, 
+    
+    PRIMARY KEY (Id_Produto), 
+    CONSTRAINT Fk_ProdCategorias FOREIGN KEY (Id_Categorias) REFERENCES categorias (Id_Categorias), 
+    CONSTRAINT fk_ProdSubCatg FOREIGN KEY (Id_Subcatg) REFERENCES sub_categorias (Id_Subcatg)
+);
+
+
+CREATE TABLE Clientes ( 
+    Id_Cliente INT AUTO_INCREMENT NOT NULL, 
+    Nome VARCHAR(100) NOT NULL, 
+    Sexo char (1) NOT NULL CHECK (Sexo IN ( 'F', 'M')),
+    CPF INT(11) NOT NULL, 
+    DataNascimento date not null, 
+    Telefone INT (11) NOT NULL, 
+    Cep int (8) not null, 
+    Rua varchar(100) not null, 
+    Cidade VARCHAR(100) NOT NULL, 
+    Estado char(2) NOT NULL, 
+    PRIMARY KEY(Id_Cliente), 
+    UNIQUE KEY AK_Cpfunico(CPF)
+ );
+
+CREATE TABLE pedidos ( 
+    Id_Pedido INT NOT NULL AUTO_INCREMENT, 
+    Id_Cliente INT NOT NULL, 
+    ID_Produto INT NOT NULL,  
+    DATA_Pedido date not null, 
+    Forma_Pagamento VARCHAR(100) NOT NULL, 
+    valor FLOAT NOT NULL, 
+    PRIMARY key (Id_Pedido), 
+    CONSTRAINT Fk_PedidoProd FOREIGN KEY (ID_Produto) REFERENCES produtos (ID_Produto)
+    );
+
+create table fornecedor ( 
+    Id_Fornecedor INT NOT NULL AUTO_INCREMENT, 
+    Nome VARCHAR(100) NOT NULL, 
+    CNPJ INT(14) NOT NULL,
+    CIDADE VARCHAR(100) NOT NULL, 
+    ESTADO CHAR(2) NOT NULL, 
+    PAIS CHAR(100) NOT NULL, 
+    PRIMARY KEY (Id_Fornecedor), 
+    UNIQUE KEY AK_CnpjUnico (CNPJ) 
+);
+
+
+CREATE TABLE ESTOQUE ( 
+Id_Estoque INT AUTO_INCREMENT NOT NULL PRIMARY KEY, 
+Id_Produto INT NOT NULL, Quantidade INT NOT NULL CHECK (Quantidade > 0), 
+Id_Fornecedor INT NOT NULL, 
+CONSTRAINT FK_EstoqueProd FOREIGN KEY (Id_Produto) REFERENCES produtos (Id_Produto), 
+CONSTRAINT FK_EstoqueFornecedor FOREIGN KEY (Id_Fornecedor) REFERENCES fornecedor (Id_Fornecedor)
+);
+
+-- Adicionando Chave estrangeira
+
+ALTER TABLE pedidos add CONSTRAINT fk_ClientesPedido FOREIGN KEY (Id_Cliente) REFERENCES clientes(Id_Cliente);
+
+-- Modificar Coluna
+ALTER TABLE fornecedor MODIFY COLUMN CNPJ BIGINT NOT NULL, ADD UNIQUE KEY AK_CnpjUnico (CNPJ);
+ALTER TABLE clientes DROP INDEX AK_Cpfunico;
+ALTER TABLE clientes MODIFY COLUMN CPF BIGINT NOT NULL, ADD UNIQUE KEY AK_cpfUnico (CPF);
+
+
+
+-- Trigger
+
+DELIMITER $
+
+CREATE TRIGGER trigger_AtualizarEstoque AFTER INSERT ON pedidos
+FOR EACH ROW
+BEGIN
+    UPDATE estoque SET Quantidade = Quantidade - 1 WHERE Id_Produto = NEW.ID_Produto;
+END $
+
+DELIMITER ;
+
+
+
+
