@@ -87,6 +87,16 @@ SELECT Id_Produto AS ID, Nome_Produto AS Nome,
 FROM produtos 
 WHERE ( SELECT Quantidade FROM estoque WHERE estoque.Id_Produto = produtos.Id_Produto ) < 50;
 ---------------
+CREATE VIEW Visualizar_Clientes_Pedidos AS
+SELECT clientes.Nome, pedidos.DATA_Pedido, pedidos.Forma_Pagamento, pedidos.valor, 
+(SELECT produtos.Nome_Produto FROM produtos WHERE produtos.Id_Produto = pedidos.ID_Produto) AS Item 
+FROM clientes inner JOIN pedidos 
+ON clientes.Id_Cliente = pedidos.Id_Cliente;
+---------------------------------------------------------------------------------------------------------------------------------------------
+                                                                 ETAPA:  4 de 5 - LOJA DE ARTIGOS ESPORTIVOS 
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 
 
