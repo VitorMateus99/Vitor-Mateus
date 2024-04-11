@@ -81,6 +81,14 @@ CONSTRAINT FK_EstoqueFornecedor FOREIGN KEY (Id_Fornecedor) REFERENCES fornecedo
 ---------------------------------------------------------------------------------------------------------------------------------------------
                                                                  ETAPA:  3 de 5 - LOJA DE ARTIGOS ESPORTIVOS 
 ---------------------------------------------------------------------------------------------------------------------------------------------
+CREATE VIEW Vizu_EstoqueBaixo AS
+SELECT Id_Produto AS ID, Nome_Produto AS Nome, 
+( SELECT Quantidade FROM estoque WHERE estoque.Id_Produto = produtos.Id_Produto ) AS Quantidade_Estoque 
+FROM produtos 
+WHERE ( SELECT Quantidade FROM estoque WHERE estoque.Id_Produto = produtos.Id_Produto ) < 50;
+---------------
+
+
 
 
 
