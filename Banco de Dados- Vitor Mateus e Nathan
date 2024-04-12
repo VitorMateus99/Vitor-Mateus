@@ -95,8 +95,14 @@ ON clientes.Id_Cliente = pedidos.Id_Cliente;
 ---------------------------------------------------------------------------------------------------------------------------------------------
                                                                  ETAPA:  4 de 5 - LOJA DE ARTIGOS ESPORTIVOS 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-
-
+DELIMITER $
+CREATE TRIGGER trigger_AtualizarEstoque AFTER INSERT ON pedidos
+FOR EACH ROW
+BEGIN
+    UPDATE estoque SET Quantidade = Quantidade - 1 WHERE Id_Produto = NEW.ID_Produto;
+END $
+DELIMITER ;
+---------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
